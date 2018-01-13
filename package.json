@@ -4,13 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard --verbose --fix | snazzy",
+    "start": "npm run lint && nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "standard": {
+    "ignore": [
+      "/config/",
+      "/views/"
+    ]
+  },
   "dependencies": {
     "alexa-app": "^4.2.0",
-    "alexa-app-server": "^3.0.1"
+    "alexa-app-server": "^3.0.1",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "lodash.defaults": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.11",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
   }
 }
