@@ -1,0 +1,20 @@
+{
+  "name": "factions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "alexa": {
+    "factions": {
+      "id": "amzn1.ask.skill.cbfb6e5d-fcad-4e09-bf68-ec89845624d4"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-app": "^4.2.0"
+  }
+}
