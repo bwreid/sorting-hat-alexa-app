@@ -1,4 +1,8 @@
 const App = require('alexa-app').app
+const Speech = require('ssml-builder')
+const shuffle = require('lodash/shuffle')
+const sampleSize = require('lodash/sampleSize')
+const phrases = require('./phrases')
 
 // Allow this module to be reloaded by hotswap when changed
 module.change_code = 1
@@ -79,6 +83,38 @@ app.intent('AMAZON.CancelIntent', {
 }, (req, res) => {
   const cancelOutput = 'No problem. Request cancelled.'
   res.say(cancelOutput)
+})
+
+app.intent('SortingHat', {
+  slots: { NAME: 'NAMES' },
+  utterances: [
+    `sort {NAME}`,
+    `sort {NAME} into a faction`
+  ]
+}, (req, res) => {
+  let name = req.slot('NAME')
+
+  if (name) {
+    name = name.toLowerCase()
+    const speech = new Speech()
+    const response = sampleSize(shuffle(phrases), 3)
+    // API request needed
+    const factions = LIST_OF_FACTIONS.map(faction => faction.name)
+    res.say(`Searching for ${name}...`).shouldEndSession(false)
+
+    // API request needed
+    const selected = sampleSize(shuffle(factions), 1)
+    speech.say(`Found ${name}. Analyzing.`).pause('1s')
+      .say(response[0]).pause('1s')
+      .say(response[1]).pause('1s')
+      .say(response[2]).pause('1s')
+      .say(`Complete. ${name}, welcome to the ${selected}.`)
+
+    const ssml = speech.ssml(true)
+    res.say(ssml).shouldEndSession(false)
+  }
+
+  res.reprompt(`Sorry, I didn't get that. Please say the name clearly.`).shouldEndSession(false)
 })
 
 app.intent('ScorePoint', {
