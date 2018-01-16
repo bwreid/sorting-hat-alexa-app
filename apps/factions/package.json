@@ -5,7 +5,7 @@
   "main": "index.js",
   "alexa": {
     "factions": {
-      "id": "amzn1.ask.skill.cbfb6e5d-fcad-4e09-bf68-ec89845624d4"
+      "id": "amzn1.ask.skill.76e3e8f3-3a44-40ed-95f5-b91666563704"
     }
   },
   "scripts": {

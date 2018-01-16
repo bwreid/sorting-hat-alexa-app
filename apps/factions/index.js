@@ -84,19 +84,21 @@ app.intent('AMAZON.CancelIntent', {
 app.intent('ScorePoint', {
   'slots': { FACTION: 'LIST_OF_FACTIONS', POINTS: 'NUMBER' },
   'utterances': [
-    `{give|score} {1-100|POINTS} points {to|to the|for|for the} {FACTION}`,
-    `{1-100|POINTS} points {to|to the|for|for the} {FACTION}`,
-    `{1-100|POINTS} {to|to the|for|for the} {FACTION}`
+    `{give|score} {-|POINTS} points {to|to the|for|for the} {-|FACTION}`,
+    `{-|POINTS} points {to|to the|for|for the} {-|FACTION}`,
+    `{-|POINTS} {to|to the|for|for the} {-|FACTION}`
   ]
 }, (req, res) => {
-  const name = req.slot('FACTION').toLowerCase()
+  const name = req.slot('FACTION') ? req.slot('FACTION').toLowerCase() : null
   const points = req.slot('POINTS')
   const isFaction = name ? factionOptions.includes(name) : false
 
   if (isFaction && points) {
     const faction = LIST_OF_FACTIONS.find(faction => faction.options.includes(name))
-    const fullName = faction.name
-    res.say(`${points} points added to the ${fullName}.`).shouldEndSession(false)
+    if (faction && faction.name) {
+      const fullName = faction.name
+      res.say(`${points} points added to the ${fullName}.`).shouldEndSession(false)
+    }
   }
 
   res.reprompt(`Sorry, I didn't get that.`).shouldEndSession(false)
