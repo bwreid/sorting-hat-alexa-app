@@ -3,6 +3,7 @@ const Speech = require('ssml-builder')
 const shuffle = require('lodash/shuffle')
 const sampleSize = require('lodash/sampleSize')
 const phrases = require('./phrases')
+const rp = require('request-promise')
 
 // Allow this module to be reloaded by hotswap when changed
 module.change_code = 1
@@ -97,24 +98,32 @@ app.intent('SortingHat', {
   if (name) {
     name = name.toLowerCase()
     const speech = new Speech()
-    const response = sampleSize(shuffle(phrases), 3)
-    // API request needed
-    const factions = LIST_OF_FACTIONS.map(faction => faction.name)
+    const selectedPhrases = sampleSize(shuffle(phrases), 3)
+
     res.say(`Searching for ${name}...`).shouldEndSession(false)
 
-    // API request needed
-    const selected = sampleSize(shuffle(factions), 1)
-    speech.say(`Found ${name}. Analyzing.`).pause('1s')
-      .say(response[0]).pause('1s')
-      .say(response[1]).pause('1s')
-      .say(response[2]).pause('1s')
-      .say(`Complete. ${name}, welcome to the ${selected}.`)
+    const url = `https://sorting-hat-api-g67.herokuapp.com/students?preferred=${name}&_expand=faction`
+    return rp(url, { json: true })
+    .then(json => {
+      const response = json[0]
+      if (response) {
+        const selected = json[0].faction.name
+        // API request needed
+        speech.say(`Found ${name}. Analyzing.`).pause('1s')
+          .say(selectedPhrases[0]).pause('1s')
+          .say(selectedPhrases[1]).pause('1s')
+          .say(selectedPhrases[2]).pause('1s')
+          .say(`Complete. ${name}, welcome to the ${selected}.`)
 
-    const ssml = speech.ssml(true)
-    res.say(ssml).shouldEndSession(false)
+        const ssml = speech.ssml(true)
+        res.say(ssml).shouldEndSession(false)
+      } else {
+        res.say(`Sorry, I couldn't find ${name}`).shouldEndSession(false)
+      }
+    })
   }
 
-  res.reprompt(`Sorry, I didn't get that. Please say the name clearly.`).shouldEndSession(false)
+  res.reprompt(`Sorry, I didn't get that.`).shouldEndSession(false)
 })
 
 app.intent('ScorePoint', {
